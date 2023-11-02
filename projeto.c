@@ -29,7 +29,7 @@ void FLVazia(TipoLista *Lista)
 { Lista -> Primeiro = (TipoApontador) malloc(sizeof(TipoCelula));
   Lista -> Ultimo = Lista -> Primeiro;
   Lista -> Primeiro -> Prox = NULL;
-}
+}//batata
 
 int Vazia(TipoLista Lista)
 { return (Lista.Primeiro == Lista.Ultimo);
