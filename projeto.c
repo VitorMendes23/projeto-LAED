@@ -163,7 +163,7 @@ void preencheMatriz(int *p, int quantidade, int **matriz, int quantColunas)
 
   while (1)
   {
-
+    int i = 0;
     while (1)
     {
       if (p[contrVetor] == copiap[i])
@@ -182,6 +182,7 @@ void preencheMatriz(int *p, int quantidade, int **matriz, int quantColunas)
         }
         break;
       }
+      i++;
     }
 
     while (p[contrVetor] == anterior)
