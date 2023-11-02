@@ -5,11 +5,14 @@
 
 // Defines
 typedef int TipoChave;
+// Chave, Tipo, NumElementos e PontoMedio
 
 typedef struct
 {
   int Chave;
-  /* outros componentes */
+  int Tipo;
+  int NumElementos;
+  int PontoMedio;
 } TipoItem;
 
 typedef struct TipoCelula *TipoApontador;
@@ -39,62 +42,99 @@ int Vazia(TipoLista Lista);
 void Insere(TipoItem x, TipoLista *Lista);
 void Retira(TipoApontador p, TipoLista *Lista, TipoItem *Item);
 void Imprime(TipoLista Lista);
+void EncontraSequencia(TipoLista Lista);
 
 /* ========================================================================= */
 
 /* ========================================================================== */
-/*
+
 int main(int argc, char *argv[])
-{ struct timeval t;
+{
+
+  int quantidade;
+  scanf("%d", &quantidade);
+
+  int *p1;
+  p1 = (int *)malloc(sizeof(int) * quantidade);
+  for (int i = 0; i < quantidade; i++)
+  {
+    scanf("%d", &p1[i]);
+  }
+
+  int quantColunas = contaQuantidade(p1, quantidade);
+
+  // Criando a matriz
+  int **matriz;
+  matriz = (int **)malloc(2 * sizeof(int *));
+  for (int i = 0; i < 2; i++)
+  {
+    matriz[i] = (int *)malloc(quantColunas * sizeof(int));
+    for (int j = 0; j < quantColunas; j++)
+    {
+      matriz[i][j] = 0;
+    }
+  }
+
+  preencheMatriz(p1, quantidade, matriz, quantColunas);
+  // imprimeMatriz(matriz, quantColunas);
+
+  struct timeval t;
 
   TipoLista lista;
   TipoItem item;
   int vetor[MAX];
   TipoApontador p;
   int i, j, k, n;
-  float  tamanho=0;
-  gettimeofday(&t,NULL);
+  float tamanho = 0;
+  gettimeofday(&t, NULL);
   srand((unsigned int)t.tv_usec);
   FLVazia(&lista);
 
-
-  //Gera uma permutacao aleatoria de chaves entre 1 e MAX
-  for(i = 0; i < MAX; i++) vetor[i] = i + 1;
-  for(i = 0; i < MAX; i++)
-    { k =  (int) (10.0 * rand()/(RAND_MAX + 1.0));
-      j =  (int) (10.0 * rand()/(RAND_MAX + 1.0));
-      n = vetor[k];
-      vetor[k] = vetor[j];
-      vetor[j] = n;
-    }
-  //Insere cada chave na lista
+  // Gera uma permutacao aleatoria de chaves entre 1 e MAX
   for (i = 0; i < MAX; i++)
-    { item.Chave = vetor[i];
-      Insere(item, &lista);
-      tamanho++;
-      printf("Inseriu: %d \n", item.Chave);
-    }
+    vetor[i] = i + 1;
+  for (i = 0; i < MAX; i++)
+  {
+    k = (int)(10.0 * rand() / (RAND_MAX + 1.0));
+    j = (int)(10.0 * rand() / (RAND_MAX + 1.0));
+    n = vetor[k];
+    vetor[k] = vetor[j];
+    vetor[j] = n;
+  }
+  // Insere cada chave na lista
+  for (i = 0; i < quantColunas; i++)
+  {
+    item.Chave = vetor[i];
+    item.Tipo = matriz[0][i];
+    item.NumElementos = matriz[1][i];
+    // item.PontoMedio = ?
+    Insere(item, &lista);
+    tamanho++;
+    // printf("Inseriu: %d \n", item.Chave);
+  }
   Imprime(lista);
 
-  //Retira cada chave da lista
-  for(i = 0; i < MAX; i++)
-    { //escolhe uma chave aleatoriamente
-      k = (int) ((tamanho) * rand() / (RAND_MAX + 1.0));
-      p = lista.Primeiro;
-      //retira chave apontada
-      Retira(p, &lista, &item);
-      tamanho--;
-      printf("Retirou: %d\n", item.Chave);
-    }
-  Imprime (lista);
-  return(0);
-}*/
+  EncontraSequencia(lista);
+
+  // Retira cada chave da lista
+  for (i = 0; i < quantColunas; i++)
+  { // escolhe uma chave aleatoriamente
+    k = (int)((tamanho)*rand() / (RAND_MAX + 1.0));
+    p = lista.Primeiro;
+    // retira chave apontada
+    Retira(p, &lista, &item);
+    tamanho--;
+    // printf("Retirou: %d\n", item.Chave);
+  }
+  Imprime(lista);
+  return (0);
+}
 
 // Chave, Tipo, NumElementos e PontoMedio
 //
 
 // MAIN - Análise de segmentos com elementos iguais
-int main(void)
+/*int main(void)
 {
 
   int quantidade;
@@ -123,7 +163,7 @@ int main(void)
 
   preencheMatriz(p, quantidade, matriz, quantColunas);
   imprimeMatriz(matriz, quantColunas);
-}
+}*/
 
 int contaQuantidade(int *p, int quantidade)
 {
@@ -166,19 +206,18 @@ void preencheMatriz(int *p, int quantidade, int **matriz, int quantColunas)
     int i = 0;
     while (1)
     {
-        int i = 0;
       if (p[contrVetor] == copiap[i])
       {
         switch (p[contrVetor])
         {
         case 0:
-          matriz[0][contrMatriz] = 0;
-          break;
-        case 128:
           matriz[0][contrMatriz] = 1;
           break;
-        case 255:
+        case 128:
           matriz[0][contrMatriz] = 2;
+          break;
+        case 255:
+          matriz[0][contrMatriz] = 3;
           break;
         }
         break;
@@ -293,7 +332,40 @@ void Imprime(TipoLista Lista)
   Aux = Lista.Primeiro->Prox;
   while (Aux != NULL)
   {
-    printf("%d\n", Aux->Item.Chave);
+    printf("CHAVE: %d ", Aux->Item.Chave);
+    printf("TIPO: %d  ", Aux->Item.Tipo);
+    printf("QANTIDADDE: %d\n", Aux->Item.NumElementos);
     Aux = Aux->Prox;
   }
+}
+
+void EncontraSequencia(TipoLista Lista)
+{
+  TipoApontador Aux;
+  Aux = Lista.Primeiro->Prox;
+  int sequencia[] = {1, 3, 2, 3, 1};
+  int controle = 0;
+  while (Aux != NULL)
+  {
+    if (sequencia[0] == Aux->Item.Tipo)
+    {
+      for (int j = 1; j < 5; j++)
+      {
+        printf("sequencia = %d tipo = %d ", sequencia[j], Aux->Item.Tipo);
+
+        if (sequencia[j] == Aux->Item.Tipo)
+        {
+          controle++;
+          if(controle == 5){
+            printf("Item encontrado");
+            return;
+          }
+        }
+        Aux = Aux->Prox;
+      }
+      controle = 0;
+    }
+    Aux = Aux->Prox;
+  }
+  printf("Item não encontrado");
 }
