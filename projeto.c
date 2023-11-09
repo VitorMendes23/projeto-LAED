@@ -89,7 +89,10 @@ int main(int argc, char *argv[])
   gettimeofday(&t, NULL);
   srand((unsigned int)t.tv_usec);
   FLVazia(&lista);
-
+  int id = 0;
+  int pp = 0;
+  int q = 0;
+  /*
   // Gera uma permutacao aleatoria de chaves entre 1 e MAX
   for (i = 0; i < MAX; i++)
     vetor[i] = i + 1;
@@ -101,13 +104,19 @@ int main(int argc, char *argv[])
     vetor[k] = vetor[j];
     vetor[j] = n;
   }
+  */
   // Insere cada chave na lista
   for (i = 0; i < quantColunas; i++)
   {
-    item.Chave = vetor[i];
+    item.Chave = id++;
     item.Tipo = matriz[0][i];
     item.NumElementos = matriz[1][i];
-    // item.PontoMedio = ?
+    // pontos para ponto médio
+    pp = q;                     // O início do próximo segmento é o fim do segmento atual
+    q = pp + item.NumElementos; // O fim do segmento é o início + número de elementos
+
+    printf("P = %d Q = %d \n ", pp, q);
+    item.PontoMedio = (pp + q) / 2;
     Insere(item, &lista);
     tamanho++;
     // printf("Inseriu: %d \n", item.Chave);
@@ -334,11 +343,14 @@ void Imprime(TipoLista Lista)
   {
     printf("CHAVE: %d ", Aux->Item.Chave);
     printf("TIPO: %d  ", Aux->Item.Tipo);
-    printf("QANTIDADDE: %d\n", Aux->Item.NumElementos);
+    printf("QANTIDADDE: %d ", Aux->Item.NumElementos);
+    printf("PONTO MÉDIO: %d\n", Aux->Item.PontoMedio);
+
     Aux = Aux->Prox;
   }
 }
 
+//A LÓGICA DE MOSTRAR O RESULTADO FINAL AINDA NÃO ESTÁ FUNCIONANDO
 void EncontraSequencia(TipoLista Lista)
 {
   TipoApontador Aux;
@@ -351,21 +363,32 @@ void EncontraSequencia(TipoLista Lista)
     {
       for (int j = 1; j < 5; j++)
       {
-        printf("sequencia = %d tipo = %d ", sequencia[j], Aux->Item.Tipo);
+        printf("tipo = %d ", Aux->Item.Tipo);
 
         if (sequencia[j] == Aux->Item.Tipo)
         {
           controle++;
-          if(controle == 5){
+          if (controle == 5)
+          {
             printf("Item encontrado");
             return;
           }
         }
-        Aux = Aux->Prox;
+        if (Aux->Prox != NULL)
+        {
+          Aux = Aux->Prox; // avança somente se houver um próximo elemento na lista
+        }
+        else
+        {
+          break; // Se não houver próximo elemento, sai do loop
+        }
       }
       controle = 0;
     }
-    Aux = Aux->Prox;
+    if (Aux != NULL)
+    {
+      Aux = Aux->Prox;
+    }
   }
   printf("Item não encontrado");
 }
